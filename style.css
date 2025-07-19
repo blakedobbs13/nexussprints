@@ -1,0 +1,611 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime&display=swap');
+
+/* --- Custom Properties for Colors --- */
+:root {
+    /* Default (Light Mode) Colors */
+    --primary-color: #F0141E; /* Red branding color */
+    --secondary-color: #f0f0f0; /* Light gray for main content */
+    --text-color: #333; /* Dark text */
+    --background-color: #fff; /* White body background */
+    --writing-area-bg: #f9f9f9; /* Off-white for writing area */
+    --border-color: #ddd;
+    --button-hover-bg: #d1121c; /* Darker red on button hover */
+
+    /* Flow State Colors (Light Mode) */
+    --background-color-flow: #2a2a2a; /* Dark background for focus */
+    --writing-area-bg-flow: rgba(255, 255, 255, 0.97); /* Near-white background for text in flow */
+    --writing-area-text-flow: #333; /* Dark text for contrast in flow */
+
+    /* Distraction State Colors (Light Mode) */
+    --background-color-distraction: #fff0d9; /* Light orange tint for distraction */
+}
+
+body.dark-mode {
+    /* Dark Mode Color Overrides */
+    --primary-color: #F0141E; /* Keep red branding */
+    --secondary-color: #333; /* Dark gray for sidebar elements */
+    --text-color: #f0f0f0; /* Light text */
+    --background-color: #1a1a1a; /* Dark body background */
+    --writing-area-bg: #000; /* Black writing area */
+    --border-color: #333;
+    --button-hover-bg: #d1121c; /* Darker red on button hover */
+
+    /* Flow State Colors (Dark Mode) */
+    --background-color-flow: #000; /* Deep black for ultimate focus in dark mode */
+    --writing-area-bg-flow: rgba(35, 35, 35, 0.97); /* Slightly lighter dark background for text in flow */
+    --writing-area-text-flow: #f5f5f5; /* Light text for contrast in flow */
+
+    /* Distraction State Colors (Dark Mode) */
+    --background-color-distraction: #3d2b21; /* Darker red-brown tint for distraction */
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    display: flex;
+    height: 100vh;
+    overflow: hidden; /* Prevent scrolling if content exceeds viewport */
+    transition: background-color 0.3s ease, color 0.3s ease; /* For fullscreen and dark mode */
+
+    /* Default background for body, using variable */
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* --- Fullscreen body specific styles --- */
+body.fullscreen {
+    background-color: #222; /* Dark background for full screen focus */
+}
+body.fullscreen .sidebar {
+    display: none; /* Hide sidebar in fullscreen */
+}
+body.fullscreen .main-content {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+}
+body.fullscreen #writing-area {
+    width: 90%;
+    height: 90%;
+    padding: 2.5%; /* More padding in fullscreen */
+    font-size: 1.5em; /* Larger text in fullscreen */
+}
+body.fullscreen .bottom-bar-container {
+    display: none; /* Hide bottom bar in fullscreen */
+}
+
+/* --- Dark Mode Styles --- */
+/* These were mostly good, just ensuring they use the new variables where appropriate */
+body.dark-mode .main-content {
+    background-color: var(--background-color); /* Use dark mode background */
+}
+
+body.dark-mode #writing-area {
+    background-color: var(--writing-area-bg); /* Use dark mode writing area bg */
+    color: var(--text-color); /* Use dark mode text color */
+    border-color: var(--border-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .info-icon-wrapper .stats-popup {
+    background-color: rgba(0, 0, 0, 0.95); /* Darker popup */
+    color: var(--text-color);
+}
+
+body.dark-mode .sidebar-section h3,
+body.dark-mode .logo {
+    color: var(--primary-color); /* Keep red branding */
+}
+body.dark-mode .goal-input,
+body.dark-mode .goal-input label,
+body.dark-mode #sprint-log li,
+body.dark-mode #prompt-genre-select {
+    color: var(--text-color);
+}
+body.dark-mode #prompt-genre-select {
+    background-color: #2a2a2a;
+    border-color: #555;
+}
+
+/* --- Sidebar Styles --- */
+.sidebar {
+    width: 250px;
+    background-color: #000; /* Black sidebar */
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    overflow-y: auto; /* Enable scrolling for many sections */
+    transition: opacity 0.5s ease, filter 0.5s ease; /* For flow mode transitions */
+}
+
+.logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 48px;
+    color: var(--primary-color); /* Red Bebas Neue font */
+    margin-bottom: 20px; /* Reduced margin */
+    text-align: center;
+}
+
+.sidebar-section {
+    width: 100%;
+    padding: 15px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 15px;
+    text-align: center;
+}
+
+.sidebar-section h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5em;
+}
+
+.timer-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 0; /* Reset margin */
+}
+
+.timer-controls button,
+.action-buttons button,
+.sidebar-section button,
+.modal-button,
+#dark-mode-toggle { /* Apply styles to all general buttons including new modal buttons */
+    background-color: var(--primary-color); /* Red buttons */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    width: 90%; /* Make buttons fill width */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.timer-controls button:hover,
+.action-buttons button:hover,
+.sidebar-section button:hover,
+.modal-button:hover,
+#dark-mode-toggle:hover {
+    background-color: var(--button-hover-bg); /* Slightly darker red on hover */
+}
+
+/* Specific style for secondary modal button */
+.modal-button.secondary {
+    background-color: #555; /* Darker gray for 'Done for the Day' */
+}
+
+.modal-button.secondary:hover {
+    background-color: #777;
+}
+
+.countdown-text {
+    font-family: 'Courier Prime', monospace; /* Courier New style for countdown */
+    font-size: 3em;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.timer-label {
+    font-size: 1em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Customizable Sprint Durations Settings */
+.timer-settings .setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.8);
+}
+.timer-settings .setting-row label {
+    font-size: 0.9em;
+}
+.timer-settings .setting-row input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.9em;
+}
+
+/* Word Count Goal Input */
+.goal-input {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    font-size: 0.9em;
+}
+.goal-input label {
+    font-family: 'Bebas Neue', cursive;
+}
+.goal-input input[type="number"] {
+    width: 70px;
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    font-family: 'Courier Prime', monospace;
+}
+
+/* Sprint Log Styles */
+#sprint-log {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    font-size: 0.9em;
+    text-align: left;
+    max-height: 150px; /* Limit height for scrolling */
+    overflow-y: auto;
+    width: 90%;
+    color: rgba(255, 255, 255, 0.8);
+}
+#sprint-log li {
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    word-break: break-all; /* Prevent long words from breaking layout */
+}
+#sprint-log li:last-child {
+    border-bottom: none;
+}
+#sprint-streak {
+    color: #FFD700; /* Gold color for streak number */
+    font-size: 1.1em;
+}
+
+/* Prompts */
+#prompt-genre-select {
+    width: 90%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: white;
+    font-family: sans-serif;
+    font-size: 0.9em;
+}
+.prompt-text {
+    font-style: italic;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 10px;
+    padding: 0 5px;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: var(--secondary-color); /* Default light background */
+    transition: background-color 0.3s ease;
+}
+
+#writing-area {
+    width: 95%;
+    height: calc(95% - 60px); /* Adjust height to make space for the bottom bar */
+    font-family: 'Courier Prime', monospace;
+    font-size: 1.2em;
+    line-height: 1.5;
+    padding: 15px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    resize: none;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    background-color: var(--writing-area-bg); /* Default light background */
+    color: var(--text-color); /* Default dark text */
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease; /* Added box-shadow transition */
+}
+
+/* --- Paragraph Indentation for Writing Area (NEW) --- */
+/* This assumes #writing-area contains <p> tags for paragraphs */
+#writing-area p:not(:first-child) {
+    text-indent: 0.5in; /* Indent all paragraphs except the first one */
+}
+
+#writing-area p:first-child {
+    text-indent: 0; /* Ensure the very first paragraph has no indent */
+}
+
+
+.bottom-bar-container {
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    position: relative;
+    min-height: 40px; /* Ensure it has some height */
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+    transition: opacity 0.5s ease, filter 0.5s ease; /* For flow mode transitions */
+}
+
+/* --- Star System Styles --- */
+.star-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    flex-grow: 1;
+    min-height: 30px;
+    padding-left: 0px;
+}
+
+.star { /* For individual gold stars (100-400 words) */
+    font-size: 1.8em;
+    color: #FFD700; /* Solid gold color */
+}
+
+.gold-star { /* For large gold stars (every 500 words) */
+    font-size: 2.5em; /* Larger size */
+    color: #FFD700; /* Solid gold color */
+    margin: 0 5px; /* Add some margin around it */
+}
+
+.platinum-star { /* For platinum stars (every 1000 words after 5000) */
+    font-size: 3em; /* Even larger */
+    color: #f8f8f8; /* A bright, almost pure white */
+    margin: 0 8px;
+
+    /* Simulate facets and depth using multiple text-shadow layers (static, no glow) */
+    text-shadow:
+        /* Inner facets/highlights (lighter shades) */
+        1px 1px 2px rgba(255, 255, 255, 0.8),
+        -1px -1px 2px rgba(255, 255, 255, 0.8),
+        1px -1px 2px rgba(255, 255, 255, 0.8),
+        -1px 1px 2px rgba(255, 255, 255, 0.8),
+
+        /* Outer edges/shadows (darker shades for depth) */
+        2px 2px 3px rgba(100, 100, 100, 0.6),
+        -2px -2px 3px rgba(100, 100, 100, 0.6),
+        2px -2px 3px rgba(100, 100, 100, 0.6),
+        -2px 2px 3px rgba(100, 100, 100, 0.6);
+}
+
+/* Word Goal Progress Bar Styles */
+.goal-progress-bar-container {
+    width: 150px; /* Adjust width as needed */
+    height: 10px;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-right: 10px; /* Space between bar and buttons */
+}
+
+.goal-progress-bar {
+    height: 100%;
+    width: 0%; /* Will be updated by JS */
+    background-color: var(--primary-color); /* Red progress color */
+    border-radius: 5px;
+    transition: width 0.3s ease-out;
+}
+
+/* --- Info Icon and Stats Popup Styles --- */
+.info-icon-wrapper {
+    position: relative;
+    z-index: 10;
+}
+
+#info-icon {
+    font-size: 1.8em;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+#info-icon:hover {
+    color: var(--button-hover-bg);
+}
+
+.stats-popup {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 180px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.95em;
+    pointer-events: none;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.stats-popup.show {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.stats-popup p {
+    margin: 0;
+}
+
+/* --- Action Buttons (Copy, Fullscreen) --- */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+.action-buttons button {
+    font-size: 0.9em;
+    padding: 8px 15px;
+    width: auto;
+}
+
+/* --- Congratulations Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of everything */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: #000; /* Black background for modal */
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-sizing: border-box;
+    font-family: 'Courier Prime', monospace;
+}
+
+.modal-title {
+    font-family: 'Bebas Neue', cursive;
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
+
+.modal-message {
+    font-size: 1.2em;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.modal-message #achieved-goal-words {
+    color: #FFD700; /* Gold color for the goal number */
+    font-weight: bold;
+}
+
+.modal-buttons {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 15px;
+    width: 100%;
+}
+.modal-buttons .modal-button {
+    width: 100%; /* Ensure buttons fill the modal width */
+}
+
+/* --- Flow State UI Cues (NEW/MODIFIED) --- */
+body.flow-mode {
+    transition: background-color 0.5s ease-in-out;
+    background-color: var(--background-color-flow); /* Sets the overall dark background */
+}
+
+/* De-emphasize other UI elements during flow state */
+/* Targeting major containers in your existing structure */
+body.flow-mode .sidebar, /* Hide/de-emphasize sidebar */
+body.flow-mode .main-content .bottom-bar-container, /* Hide/de-emphasize bottom bar */
+body.flow-mode .main-content .header { /* Assuming a header if it exists in main-content */
+    transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out, pointer-events 0.5s ease;
+    opacity: 0.15; /* Make other elements highly semi-transparent */
+    filter: grayscale(0.8) blur(0.5px); /* Desaturate and apply a very subtle blur */
+    pointer-events: none; /* Make them unclickable during flow */
+}
+
+/* Emphasize the writing area during flow state */
+body.flow-mode #writing-area {
+    transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out, color 0.5s ease-in-out, transform 0.3s ease;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.6); /* Stronger white glow */
+    background-color: var(--writing-area-bg-flow); /* Use flow-specific background */
+    color: var(--writing-area-text-flow); /* Use flow-specific text color */
+    opacity: 1; /* Ensure it's fully opaque */
+    z-index: 10; /* Ensure it's on top of any layered elements */
+    pointer-events: auto; /* Ensure it remains clickable */
+    transform: scale(1.005); /* Very subtle zoom effect to draw attention */
+}
+
+/* --- Distraction Cues (MODIFIED) --- */
+body.distraction-mode {
+    transition: background-color 0.5s ease-in-out;
+    background-color: var(--background-color-distraction); /* Distinct color for distraction */
+}
+
+/* Reset other elements to full visibility in distraction mode */
+body.distraction-mode .sidebar,
+body.distraction-mode .main-content .bottom-bar-container,
+body.distraction-mode .main-content .header {
+    opacity: 1;
+    filter: none;
+    pointer-events: auto; /* Make them clickable again */
+}
+
+/* Reset writing area in distraction mode */
+body.distraction-mode #writing-area {
+    box-shadow: none;
+    background-color: var(--writing-area-bg); /* Revert to normal writing area background */
+    color: var(--text-color); /* Revert to normal text color */
+    transform: scale(1); /* Revert zoom */
+}
+
+/* --- Nudge message style (NEW) --- */
+#flow-nudge-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color); /* Matches your theme */
+    color: white; /* Changed to white for better contrast on red */
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: sans-serif;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    z-index: 1000;
+    pointer-events: none; /* Allows clicks to pass through */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 80%; /* Limit width */
+}
+
+#flow-nudge-message.show {
+    opacity: 1;
+    visibility: visible;
+}

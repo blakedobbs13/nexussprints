@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Sprints</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">NEXUS SPRINTS</div>
+        <div class="timer-controls">
+            <div id="countdown" class="countdown-text">25:00</div>
+            <p class="timer-label">Writing Time</p>
+            <button id="start-timer">Start Sprint</button>
+            <button id="reset-timer">Reset Timer</button>
+
+            <div class="sidebar-section timer-settings">
+                <h3>Timer Settings</h3>
+                <div class="setting-row">
+                    <label for="writing-duration">Writing (min):</label>
+                    <input type="number" id="writing-duration" value="25" min="1">
+                </div>
+                <div class="setting-row">
+                    <label for="short-break-duration">Short Break (min):</label>
+                    <input type="number" id="short-break-duration" value="5" min="1">
+                </div>
+                <div class="setting-row">
+                    <label for="long-break-duration">Long Break (min):</label>
+                    <input type="number" id="long-break-duration" value="15" min="1">
+                </div>
+            </div>
+
+            <div class="goal-input">
+                <label for="word-goal">Goal:</label>
+                <input type="number" id="word-goal" value="500" min="50">
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>Sprint Log (<span id="sprint-streak">0</span> day streak)</h3>
+            <ul id="sprint-log">
+                </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>Prompts</h3>
+            <select id="prompt-genre-select">
+                <option value="general">General</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="sci-fi">Sci-Fi</option>
+                <option value="mystery">Mystery</option>
+                <option value="romance">Romance</option>
+            </select>
+            <button id="generate-prompt">New Prompt</button>
+            <p id="current-prompt" class="prompt-text"></p>
+        </div>
+
+        <div class="sidebar-section">
+            <button id="dark-mode-toggle"><i class="fas fa-moon"></i> Dark Mode</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <textarea id="writing-area" placeholder="Start writing your masterpiece here..."></textarea>
+
+        <div class="bottom-bar-container">
+            <div class="info-icon-wrapper">
+                <i class="fas fa-info-circle" id="info-icon"></i>
+                <div class="stats-popup" id="stats-popup">
+                    <p><strong>Word Count:</strong> <span id="stat-words">0</span> / <span id="goal-display">500</span></p>
+                    <p><strong>Characters:</strong> <span id="stat-chars">0</span></p>
+                    <p><strong>Paragraphs:</strong> <span id="stat-paragraphs">0</span></p>
+                    <p><strong>Approx. Pages:</strong> <span id="stat-pages">0</span></p>
+                </div>
+            </div>
+
+            <div class="star-container" id="star-container">
+                </div>
+
+            <div class="goal-progress-bar-container">
+                <div class="goal-progress-bar" id="goal-progress-bar"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="copy-text"><i class="fas fa-copy"></i> Copy Text</button>
+                <button id="fullscreen-toggle"><i class="fas fa-expand"></i> Fullscreen</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="sprint-end-sound" src="sounds/ding.mp3" preload="auto"></audio>
+    <audio id="break-end-sound" src="sounds/chime.mp3" preload="auto"></audio>
+    <audio id="goal-achieved-sound" src="sounds/success.mp3" preload="auto"></audio> <div id="goal-reached-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title">Congratulations!</h2>
+            <p class="modal-message">You've reached your goal of <span id="achieved-goal-words">500</span> words!</p>
+            <div class="modal-buttons">
+                <button id="keep-writing-btn" class="modal-button">Keep Writing</button>
+                <button id="done-for-day-btn" class="modal-button secondary">Done for the Day</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
