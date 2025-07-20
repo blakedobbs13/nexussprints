@@ -69,6 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const WORDS_PER_PAGE = 250;
 
+    // --- Star Image Paths (YOU CAN CHANGE THESE!) ---
+    // Make sure these image files exist in an 'images' folder relative to your index.html
+    const SMALL_STAR_IMAGE_PATH = 'images/silver-star.png'; // Example: create an 'images' folder and put small_star.png there
+    const GOLD_STAR_IMAGE_PATH = 'images/gold-star.png';   // Example: create an 'images' folder and put gold_star.png there
+    const PLATINUM_STAR_IMAGE_PATH = 'images/diamond-star.png'; // Example: create an 'images' folder and put platinum_star.png there
+
+
     // --- Prompts Data ---
     const prompts = {
         general: [
@@ -264,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function countParagraphs() {
         const text = writingArea.value.trim();
         if (text === '') return 0;
+        // Count paragraphs by splitting on one or more newlines, then filtering out empty strings
         const paragraphs = text.split(/\n+/).filter(para => para.trim().length > 0);
         return paragraphs.length;
     }
@@ -311,7 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStarsDisplay() {
         starContainer.innerHTML = ''; // Clear existing stars
         const totalWords = countWords();
-
         let numPlatinumStars = 0;
         let numLargeGoldStars = 0;
         let numSmallStars = 0;
@@ -319,37 +326,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (totalWords >= WORDS_FOR_FIRST_PLATINUM_STAR) {
             numPlatinumStars = Math.floor((totalWords - WORDS_FOR_FIRST_PLATINUM_STAR) / WORDS_PER_ADDITIONAL_PLATINUM_STAR) + 1;
             numPlatinumStars = Math.min(numPlatinumStars, MAX_PLATINUM_STARS);
-
             for (let i = 0; i < numPlatinumStars; i++) {
-                const platinumStar = document.createElement('span');
-                platinumStar.classList.add('platinum-star');
-                platinumStar.textContent = '🌟';
+                const platinumStar = document.createElement('img'); // Changed to img
+                platinumStar.src = PLATINUM_STAR_IMAGE_PATH; // Set source
+                platinumStar.alt = 'Platinum Star'; // Set alt text
+                platinumStar.classList.add('platinum-star-image'); // Add specific class for styling
                 starContainer.appendChild(platinumStar);
             }
         } else {
             numLargeGoldStars = Math.floor(totalWords / WORDS_PER_LARGE_GOLD_STAR_UNIT);
             numLargeGoldStars = Math.min(numLargeGoldStars, MAX_LARGE_GOLD_STARS);
-
             if (numLargeGoldStars > 0) {
                 for (let i = 0; i < numLargeGoldStars; i++) {
-                    const goldStar = document.createElement('span');
-                    goldStar.classList.add('gold-star');
-                    goldStar.textContent = '⭐';
+                    const goldStar = document.createElement('img'); // Changed to img
+                    goldStar.src = GOLD_STAR_IMAGE_PATH; // Set source
+                    goldStar.alt = 'Gold Star'; // Set alt text
+                    goldStar.classList.add('gold-star-image'); // Add specific class for styling
                     starContainer.appendChild(goldStar);
                 }
             } else {
                 numSmallStars = Math.floor(totalWords / WORDS_PER_SMALL_STAR);
                 numSmallStars = Math.min(numSmallStars, MAX_SMALL_STARS);
-
                 for (let i = 0; i < numSmallStars; i++) {
-                    const star = document.createElement('span');
-                    star.classList.add('star');
-                    star.textContent = '⭐';
+                    const star = document.createElement('img'); // Changed to img
+                    star.src = SMALL_STAR_IMAGE_PATH; // Set source
+                    star.alt = 'Small Star'; // Set alt text
+                    star.classList.add('small-star-image'); // Add specific class for styling
                     starContainer.appendChild(star);
                 }
             }
         }
     }
+
 
     // --- Local Storage Functions ---
     function saveWriting() {
@@ -408,263 +416,64 @@ document.addEventListener('DOMContentLoaded', () => {
             const diffTime = Math.abs(today - lastSprintDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays === 1) {
+            if (diffDays === 1) { // If last sprint was yesterday
                 sprintStreakSpan.textContent = streak;
-            } else if (diffDays > 1) {
+            } else if (diffDays > 1) { // If more than one day passed, reset streak
                 sprintStreakSpan.textContent = 0;
-            } else {
+            } else { // If same day, keep current streak (or if it's the first sprint today)
                 sprintStreakSpan.textContent = streak;
             }
         } else {
-            sprintStreakSpan.textContent = 0;
+            sprintStreakSpan.textContent = 0; // No previous streak data
         }
-    }
-
-    // --- Dark Mode Functions ---
-    function applyDarkMode(isDark) {
-        if (isDark) {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
-    }
-
-    function saveDarkModePreference(isDark) {
-        localStorage.setItem('nexusSprintsDarkMode', isDark);
-    }
-
-    function loadDarkModePreference() {
-        const isDark = localStorage.getItem('nexusSprintsDarkMode') === 'true';
-        applyDarkMode(isDark);
-        // Update button text / icon based on loaded preference
-        darkModeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i> Light Mode' : '<i class="fas fa-moon"></i> Dark Mode';
-    }
-
-    // --- Goal Reached Modal Functions ---
-    function showGoalReachedModal(goal) {
-        achievedGoalWordsSpan.textContent = goal;
-        goalReachedModal.classList.add('show');
-        goalAchievedSound.play();
-        // Optionally pause timer when goal is reached
-        if (timer) {
-            pauseTimer();
-        }
-    }
-
-    function hideGoalReachedModal() {
-        goalReachedModal.classList.remove('show');
     }
 
     function logSprint() {
-        // Calculate duration based on time spent, not remaining
-        const durationSeconds = isWritingTime ? (WRITING_TIME - timeLeft) : (BREAK_TIME - timeLeft);
-        const minutes = Math.floor(durationSeconds / 60);
-        const seconds = durationSeconds % 60;
-        const words = countWords();
-        const date = new Date().toLocaleDateString();
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (!isWritingTime) return; // Only log if it was a writing sprint
+        const wordsWritten = countWords() - lastWordsCount; // Words written in this sprint
+        const date = new Date();
+        const formattedDate = date.toLocaleDateString();
+        const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const li = document.createElement('li');
-        li.textContent = `${date} ${time}: ${words} words (${minutes}m ${seconds}s)`;
+        li.textContent = `${formattedDate} ${formattedTime} - ${wordsWritten} words in ${formatTime(WRITING_TIME)} sprint.`;
         sprintLogUl.prepend(li);
         saveSprintLog();
+        updateSprintStreak();
+    }
 
+    function updateSprintStreak() {
         const currentStreak = parseInt(sprintStreakSpan.textContent);
-        const lastDateStr = localStorage.getItem('nexusSprintsLastDate');
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        if (!lastDateStr) {
+        const lastDateStr = localStorage.getItem('nexusSprintsLastDate');
+        let lastSprintDate = null;
+        if (lastDateStr) {
+            lastSprintDate = new Date(lastDateStr);
+            lastSprintDate.setHours(0, 0, 0, 0);
+        }
+
+        if (!lastSprintDate) { // First sprint ever
             sprintStreakSpan.textContent = 1;
         } else {
-            const lastSprintDate = new Date(lastDateStr);
-            lastSprintDate.setHours(0, 0, 0, 0);
-
             const diffTime = Math.abs(today - lastSprintDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays === 1) { // If it's the next day
+            if (diffDays === 1) { // If last sprint was yesterday, increment streak
                 sprintStreakSpan.textContent = currentStreak + 1;
             } else if (diffDays > 1) { // If more than one day passed, reset streak
-                sprintStreakSpan.textContent = 1;
+                sprintStreakSpan.textContent = 1; // Start new streak
             }
-            // If diffDays is 0 (same day), streak remains unchanged
+            // If same day, streak doesn't change
         }
-        localStorage.setItem('nexusSprintsLastDate', today.toISOString());
-        saveSprintStreak();
+        localStorage.setItem('nexusSprintsLastDate', today.toISOString()); // Store today's date
+        saveSprintStreak(); // Save updated streak data
     }
 
-    // --- Flow State Functions (NEW) ---
-    function updateFlowState() {
-        const now = Date.now();
 
-        // Clear any existing distraction timeouts
-        clearTimeout(typingTimeout);
-
-        // Set a new timeout to detect a long pause / potential distraction
-        typingTimeout = setTimeout(() => {
-            if (timer && isWritingTime) { // Only check if sprint is active and it's writing time
-                applyUICues('distraction');
-                showFlowNudge("You've paused for a bit. Let's get back in the flow!");
-            }
-        }, DISTRACTION_PAUSE_THRESHOLD_MS);
-
-        // The periodic analyzeTypingPatterns will handle transitioning back to flow or neutral
-    }
-
-    function analyzeTypingPatterns() {
-        const now = Date.now();
-        const intervalDuration = FLOW_ANALYSIS_INTERVAL_MS; // Use the interval duration for calculation
-
-        if (totalTimeInInterval === 0 && totalKeyStrokesInInterval > 0) {
-             // Handle the first interval where totalTimeInInterval might still be 0 but keys were pressed
-             totalTimeInInterval = now - (lastTypingTime - intervalDuration); // Estimate time based on interval
-        } else if (totalTimeInInterval === 0) {
-            // No keys typed in the interval, so no time to calculate WPM
-            // This prevents division by zero if no typing occurred
-        }
-
-        let currentWPM = 0;
-        let currentBackspaceRatio = 0;
-
-        // Calculate WPM and backspace ratio for the current interval
-        if (totalTimeInInterval > 0 && totalKeyStrokesInInterval > 0) {
-            // WPM: (characters / 5) / (minutes)
-            currentWPM = (totalKeyStrokesInInterval / 5) / (totalTimeInInterval / 60000);
-            currentBackspaceRatio = backspacesInInterval / totalKeyStrokesInInterval;
-        }
-
-        const currentPauseTime = now - lastTypingTime; // Time since last key press
-
-        let isCurrentlyInFlow = false;
-        if (timer && isWritingTime) { // Only consider flow if sprint is active and it's writing time
-            if (currentWPM >= FLOW_WPM_THRESHOLD &&
-                currentBackspaceRatio <= FLOW_BACKSPACE_RATIO_THRESHOLD &&
-                currentPauseTime <= FLOW_PAUSE_THRESHOLD_MS) {
-                isCurrentlyInFlow = true;
-            }
-        }
-
-        // Apply visual cues based on detected state
-        if (isCurrentlyInFlow) {
-            applyUICues('flow');
-        } else if (currentPauseTime > FLOW_PAUSE_THRESHOLD_MS && timer && isWritingTime) {
-            // If not in flow due to a pause (and sprint is active), apply distraction cues
-            applyUICues('distraction');
-        } else {
-            // If typing is happening but not meeting flow thresholds, or timer is paused/off-sprint
-            applyUICues('neutral');
-        }
-
-        // Reset metrics for the next interval
-        totalKeyStrokesInInterval = 0;
-        totalTimeInInterval = 0;
-        backspacesInInterval = 0;
-    }
-
-    function applyUICues(state) {
-        // Remove all state classes first
-        document.body.classList.remove('flow-mode', 'distraction-mode');
-
-        if (state === 'flow') {
-            document.body.classList.add('flow-mode');
-            hideFlowNudge(); // Always hide nudge when in flow
-        } else if (state === 'distraction') {
-            // Add distraction mode but only show nudge if user isn't in another tab already
-            document.body.classList.add('distraction-mode');
-            // Nudge is shown via updateFlowState or window.blur directly
-        }
-        // If state is 'neutral', no class is added, effectively removing previous ones.
-    }
-
-    function showFlowNudge(message) {
-        flowNudgeMessage.textContent = message;
-        flowNudgeMessage.classList.add('show');
-        clearTimeout(flowNudgeTimeout); // Clear previous timeout if a new nudge appears
-        flowNudgeTimeout = setTimeout(() => {
-            hideFlowNudge();
-        }, NUDGE_DISPLAY_TIME_MS);
-    }
-
-    function hideFlowNudge() {
-        flowNudgeMessage.classList.remove('show');
-    }
-
-    // --- Event Listeners ---
-    startBtn.addEventListener('click', () => {
-        if (timer) { // If timer is running, pause it
-            pauseTimer();
-        } else { // If timer is paused or not started, start/resume it
-            startTimer();
-        }
-    });
-
-    resetBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to reset the sprint? Your current writing will be cleared.')) {
-            resetTimer();
-        }
-    });
-
-    writingArea.addEventListener('input', (event) => {
-        saveWriting();
-        updateStatsDisplay();
-        updateStarsDisplay();
-
-        // Flow State Tracking (Accumulate metrics)
-        const now = Date.now();
-        if (lastTypingTime) {
-            totalTimeInInterval += (now - lastTypingTime); // Accumulate time since last key
-        }
-        lastTypingTime = now; // Update last key press time
-
-        totalKeyStrokesInInterval++;
-        if (event.inputType === 'deleteContentBackward') {
-            backspacesInInterval++;
-        }
-        updateFlowState(); // Trigger immediate flow state check based on pause time
-    });
-
-    // Add window blur/focus listeners for more robust distraction detection (NEW)
-    window.addEventListener('blur', () => {
-        if (timer && isWritingTime) { // Only if a sprint is active and it's writing time
-            applyUICues('distraction');
-            showFlowNudge("Focus lost! Get back to your sprint.");
-        }
-    });
-
-    window.addEventListener('focus', () => {
-        if (timer && isWritingTime) { // Only if a sprint is active and it's writing time
-            // When focus returns, re-evaluate flow state based on current typing.
-            // A short delay might be good to allow user to re-engage.
-            setTimeout(() => {
-                analyzeTypingPatterns(); // Re-evaluate immediately
-            }, 500);
-        }
-    });
-
-    // Event listeners for customizable duration inputs
-    writingDurationInput.addEventListener('change', () => {
-        WRITING_TIME = (parseInt(writingDurationInput.value) || 25) * 60;
-        if (!timer && isWritingTime) { // Only update if timer is not running and it's writing time
-            timeLeft = WRITING_TIME;
-            updateTimerDisplay();
-        }
-    });
-    shortBreakDurationInput.addEventListener('change', () => {
-        BREAK_TIME = (parseInt(shortBreakDurationInput.value) || 5) * 60;
-    });
-    longBreakDurationInput.addEventListener('change', () => {
-        LONG_BREAK_TIME = (parseInt(longBreakDurationInput.value) || 15) * 60;
-    });
-
-    infoIcon.addEventListener('click', () => {
-        statsPopup.classList.toggle('show');
-        if (statsPopup.classList.contains('show')) {
-            updateStatsDisplay();
-        }
-    });
-
-    generatePromptBtn.addEventListener('click', () => {
+    // --- Prompt Generation ---
+    function generateRandomPrompt() {
         const genre = promptGenreSelect.value;
         const genrePrompts = prompts[genre];
         if (genrePrompts && genrePrompts.length > 0) {
@@ -673,84 +482,305 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             currentPromptDisplay.textContent = "No prompts available for this genre.";
         }
+    }
+
+    // --- Modal Functions ---
+    function showGoalReachedModal(goal) {
+        achievedGoalWordsSpan.textContent = goal;
+        goalReachedModal.classList.add('active');
+        goalAchievedSound.play();
+        pauseTimer(); // Pause timer when goal is reached
+    }
+
+    function hideGoalReachedModal() {
+        goalReachedModal.classList.remove('active');
+    }
+
+    // --- Flow State & Nudge Functions (NEW) ---
+    function applyUICues(state) {
+        const body = document.body;
+        const sidebar = document.querySelector('.sidebar');
+        const bottomBar = document.querySelector('.bottom-bar-container');
+
+        // Reset classes first
+        body.classList.remove('flow-state', 'distraction-state');
+        sidebar.style.opacity = '1';
+        sidebar.style.filter = 'none';
+        bottomBar.style.opacity = '1';
+        bottomBar.style.filter = 'none';
+        writingArea.style.transform = 'scale(1)';
+        writingArea.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'; // Default shadow
+        writingArea.style.backgroundColor = 'var(--writing-area-bg)';
+        writingArea.style.color = 'var(--text-color)';
+        flowNudgeMessage.classList.remove('active'); // Hide nudge by default
+
+        if (state === 'flow') {
+            body.classList.add('flow-state');
+            sidebar.style.opacity = '0.3';
+            sidebar.style.filter = 'blur(2px)';
+            bottomBar.style.opacity = '0.3';
+            bottomBar.style.filter = 'blur(2px)';
+            writingArea.style.transform = 'scale(1.01)'; // Subtle zoom
+            writingArea.style.boxShadow = '0 0 20px rgba(240, 20, 30, 0.7)'; // Red glowing shadow
+            writingArea.style.backgroundColor = 'var(--writing-area-bg-flow)';
+            writingArea.style.color = 'var(--writing-area-text-flow)';
+        } else if (state === 'distraction') {
+            body.classList.add('distraction-state');
+            sidebar.style.opacity = '1';
+            sidebar.style.filter = 'none';
+            bottomBar.style.opacity = '1';
+            bottomBar.style.filter = 'none';
+            writingArea.style.transform = 'scale(1)';
+            writingArea.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)'; // Default shadow
+            writingArea.style.backgroundColor = 'var(--writing-area-bg)'; // Revert to neutral background for distraction
+            writingArea.style.color = 'var(--text-color)'; // Revert to neutral text color
+            showFlowNudge("Are you still there? Get back to writing!");
+        }
+    }
+
+    function showFlowNudge(message) {
+        flowNudgeMessage.textContent = message;
+        flowNudgeMessage.classList.add('active');
+        clearTimeout(flowNudgeTimeout);
+        flowNudgeTimeout = setTimeout(hideFlowNudge, NUDGE_DISPLAY_TIME_MS);
+    }
+
+    function hideFlowNudge() {
+        flowNudgeMessage.classList.remove('active');
+    }
+
+    function analyzeTypingPatterns() {
+        if (!isWritingTime || !timer) return; // Only analyze when writing time and timer is active
+
+        const currentTime = Date.now();
+        const timeElapsedSinceLastType = currentTime - lastTypingTime;
+
+        if (timeElapsedSinceLastType > DISTRACTION_PAUSE_THRESHOLD_MS) {
+            applyUICues('distraction');
+        } else if (timeElapsedSinceLastType > FLOW_PAUSE_THRESHOLD_MS) {
+            // Still in neutral, but close to distraction, could show a softer cue
+            applyUICues('neutral');
+        } else {
+            // Actively typing, consider flow state
+            const currentWords = countWords();
+            const wordsTypedInInterval = currentWords - lastWordsCount; // This is a rough estimate for short intervals
+
+            if (wordsTypedInInterval > 0) { // Only consider flow if words are being added
+                const minutesElapsed = FLOW_ANALYSIS_INTERVAL_MS / (1000 * 60);
+                const wpm = wordsTypedInInterval / minutesElapsed;
+
+                // Simple flow detection: typing fast enough and not too many backspaces
+                if (wpm >= FLOW_WPM_THRESHOLD) {
+                    applyUICues('flow');
+                } else {
+                    applyUICues('neutral');
+                }
+            } else {
+                applyUICues('neutral'); // No words added, not in flow
+            }
+        }
+    }
+
+
+    // --- Event Listeners ---
+    startBtn.addEventListener('click', startTimer);
+    resetBtn.addEventListener('click', resetTimer);
+
+    writingArea.addEventListener('input', () => {
+        saveWriting();
+        updateStatsDisplay();
+        updateStarsDisplay(); // Update stars on every input
+        if (isWritingTime && timer) { // Only update last typing time if actively writing
+            lastTypingTime = Date.now();
+            clearTimeout(typingTimeout); // Clear previous timeout
+            typingTimeout = setTimeout(() => {
+                // If typing stops for a set period, apply neutral or distraction cue
+                if (Date.now() - lastTypingTime > FLOW_PAUSE_THRESHOLD_MS) {
+                    applyUICues('neutral'); // Or 'distraction' if longer pause
+                }
+            }, FLOW_PAUSE_THRESHOLD_MS);
+            // After any input, re-evaluate UI cue
+            analyzeTypingPatterns();
+        }
     });
+
+    // --- New Event Listener for Paragraph Indentation ---
+    writingArea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { // Only on Enter, not Shift+Enter
+            e.preventDefault(); // Prevent default new line
+            const start = writingArea.selectionStart;
+            const end = writingArea.selectionEnd;
+            const value = writingArea.value;
+
+            // Insert newline and 4 spaces (or a tab '\t')
+            const textToInsert = '\n    '; // New line + 4 spaces
+            
+            // Get the line content before the cursor
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            const line = value.substring(lineStart, start);
+            
+            // Check if the current line is empty or just whitespace
+            const isLineEmpty = line.trim().length === 0;
+
+            let newText;
+            if (start === value.length || isLineEmpty) {
+                // If at the end or on an empty line, just append the indent
+                newText = value.substring(0, start) + textToInsert + value.substring(end);
+            } else {
+                // If in the middle of a line, find the last non-whitespace char for context
+                const lastCharIndexBeforeCursor = start - 1;
+                if (lastCharIndexBeforeCursor >= 0 && value[lastCharIndexBeforeCursor] !== '\n') {
+                    // If not at the very beginning of a line, start new indented paragraph
+                    newText = value.substring(0, start) + textToInsert + value.substring(end);
+                } else {
+                    // If at the beginning of a line (or just after newline), apply indent
+                    newText = value.substring(0, start) + textToInsert + value.substring(end);
+                }
+            }
+            
+            writingArea.value = newText;
+            // Place cursor after the inserted indent
+            writingArea.selectionStart = writingArea.selectionEnd = start + textToInsert.length;
+            
+            // Manually trigger input event for stats and saving
+            const event = new Event('input', { bubbles: true });
+            writingArea.dispatchEvent(event);
+        }
+    });
+
+
+    infoIcon.addEventListener('click', () => {
+        statsPopup.classList.toggle('active');
+    });
+
+    // Hide stats popup when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!infoIcon.contains(event.target) && !statsPopup.contains(event.target)) {
+            statsPopup.classList.remove('active');
+        }
+    });
+
+    wordGoalInput.addEventListener('input', () => {
+        updateStatsDisplay(); // Update display when goal changes
+        localStorage.setItem('nexusSprintsWordGoal', wordGoalInput.value); // Save goal
+    });
+
+    // Load saved word goal on startup
+    function loadWordGoal() {
+        const savedGoal = localStorage.getItem('nexusSprintsWordGoal');
+        if (savedGoal) {
+            wordGoalInput.value = savedGoal;
+        }
+        goalDisplay.textContent = wordGoalInput.value; // Initialize goal display
+    }
+
+    promptGenreSelect.addEventListener('change', generateRandomPrompt);
+    generatePromptBtn.addEventListener('click', generateRandomPrompt);
+
+    // Initial prompt generation
+    generateRandomPrompt();
 
     copyTextBtn.addEventListener('click', () => {
         writingArea.select();
-        try {
-            document.execCommand('copy');
-            alert('Text copied to clipboard!');
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-            alert('Failed to copy text. Please select and copy manually.');
-        }
-        window.getSelection().removeAllRanges();
+        document.execCommand('copy');
+        // Optional: Provide visual feedback like a tooltip or temporary message
+        copyTextBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyTextBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Text';
+        }, 1500);
     });
 
     fullscreenToggleBtn.addEventListener('click', () => {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
+        document.body.classList.toggle('fullscreen');
+        if (document.body.classList.contains('fullscreen')) {
+            fullscreenToggleBtn.innerHTML = '<i class="fas fa-compress"></i> Exit Fullscreen';
+            writingArea.focus(); // Keep focus on writing area
         } else {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                alert('Fullscreen mode could not be activated.');
-            });
+            fullscreenToggleBtn.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
         }
     });
 
-    document.addEventListener('fullscreenchange', () => {
-        if (document.fullscreenElement) {
-            document.body.classList.add('fullscreen');
-        } else {
-            document.body.classList.remove('fullscreen');
-        }
-    });
-
-    // Dark Mode Toggle Listener
     darkModeToggle.addEventListener('click', () => {
-        const isDark = document.body.classList.contains('dark-mode');
-        applyDarkMode(!isDark);
-        saveDarkModePreference(!isDark);
-        darkModeToggle.innerHTML = !isDark ? '<i class="fas fa-sun"></i> Light Mode' : '<i class="fas fa-moon"></i> Dark Mode';
+        document.body.classList.toggle('dark-mode');
+        // Save dark mode preference to local storage
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('nexusSprintsDarkMode', 'enabled');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        } else {
+            localStorage.setItem('nexusSprintsDarkMode', 'disabled');
+            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        }
     });
 
-    // Modal Button Event Listeners
+    // Check for saved dark mode preference on load
+    function loadDarkModePreference() {
+        if (localStorage.getItem('nexusSprintsDarkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        } else {
+            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        }
+    }
+
+    // Modal button event listeners
     keepWritingBtn.addEventListener('click', () => {
         hideGoalReachedModal();
-        if (!timer) { // If timer was paused by goal, resume it
-            startTimer();
-        }
-        writingArea.focus(); // Keep focus on writing area
+        startTimer(); // Resume timer
     });
 
     doneForDayBtn.addEventListener('click', () => {
         hideGoalReachedModal();
-        if (timer) {
-            pauseTimer(); // Pause the timer if it's running
-        }
-        // Optionally, you might want to reset the sprint fully here or just leave it paused.
-        alert("Great job reaching your goal! Feel free to reset the timer if you're done for the day.");
+        resetTimer(); // Reset everything
     });
 
 
-    // --- Initial Setup ---
-    loadWriting(); // This will load the text but NOT call updateStatsDisplay yet.
-    loadSprintLog();
-    loadSprintStreak();
-    loadDarkModePreference(); // Load dark mode preference on start
+    // Initialize settings from local storage or defaults
+    function loadSettings() {
+        const savedWritingDuration = localStorage.getItem('nexusSprintsWritingDuration');
+        const savedShortBreakDuration = localStorage.getItem('nexusSprintsShortBreakDuration');
+        const savedLongBreakDuration = localStorage.getItem('nexusSprintsLongBreakDuration');
 
-    // Set initial lastWordsCount after text is loaded, to prevent immediate goal popup
-    lastWordsCount = countWords();
-    const initialWords = countWords();
-    const initialGoal = parseInt(wordGoalInput.value) || 0;
+        if (savedWritingDuration) writingDurationInput.value = savedWritingDuration;
+        if (savedShortBreakDuration) shortBreakDurationInput.value = savedShortBreakDuration;
+        if (savedLongBreakDuration) longBreakDurationInput.value = savedLongBreakDuration;
 
-    // If goal is already met on load, set goalAchievedThisSprint to true
-    // so it doesn't pop up until the next sprint or reset.
-    if (initialWords >= initialGoal && initialGoal > 0) {
-        goalAchievedThisSprint = true;
-    } else {
-        goalAchievedThisSprint = false; // Ensure it's false if goal isn't met on load
+        // Update current working times
+        WRITING_TIME = (parseInt(writingDurationInput.value) || 25) * 60;
+        BREAK_TIME = (parseInt(shortBreakDurationInput.value) || 5) * 60;
+        LONG_BREAK_TIME = (parseInt(longBreakDurationInput.value) || 15) * 60;
+
+        // Set initial countdown display based on loaded writing time
+        timeLeft = WRITING_TIME;
+        updateTimerDisplay();
     }
 
-    resetTimer(); // Initialize timer display and stats (will call updateStatsDisplay for the initial display)
+    // Event listeners for duration input changes
+    writingDurationInput.addEventListener('input', (e) => {
+        localStorage.setItem('nexusSprintsWritingDuration', e.target.value);
+        if (isWritingTime && !timer) { // Only update displayed time if not running and it's writing time
+            timeLeft = (parseInt(e.target.value) || 25) * 60;
+            updateTimerDisplay();
+        }
+        WRITING_TIME = (parseInt(e.target.value) || 25) * 60; // Update global variable immediately
+    });
+    shortBreakDurationInput.addEventListener('input', (e) => {
+        localStorage.setItem('nexusSprintsShortBreakDuration', e.target.value);
+        BREAK_TIME = (parseInt(e.target.value) || 5) * 60;
+    });
+    longBreakDurationInput.addEventListener('input', (e) => {
+        localStorage.setItem('nexusSprintsLongBreakDuration', e.target.value);
+        LONG_BREAK_TIME = (parseInt(e.target.value) || 15) * 60;
+    });
+
+
+    // --- Initialization Calls ---
+    loadWriting(); // Load writing content
+    loadSprintLog(); // Load sprint log
+    loadSprintStreak(); // Load sprint streak
+    loadWordGoal(); // Load word goal
+    loadDarkModePreference(); // Load dark mode preference
+
+    // Initial update of stats and stars after loading all content
+    updateStatsDisplay();
+    updateStarsDisplay();
 });

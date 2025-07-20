@@ -270,6 +270,7 @@ body.dark-mode #prompt-genre-select {
 #sprint-log li:last-child {
     border-bottom: none;
 }
+
 #sprint-streak {
     color: #FFD700; /* Gold color for streak number */
     font-size: 1.1em;
@@ -287,6 +288,7 @@ body.dark-mode #prompt-genre-select {
     font-family: sans-serif;
     font-size: 0.9em;
 }
+
 .prompt-text {
     font-style: italic;
     font-size: 0.9em;
@@ -323,18 +325,21 @@ body.dark-mode #prompt-genre-select {
     background-color: var(--writing-area-bg); /* Default light background */
     color: var(--text-color); /* Default dark text */
     transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease; /* Added box-shadow transition */
+    white-space: pre-wrap; /* Ensures that whitespace is preserved and lines wrap */
+    overflow-wrap: break-word; /* Breaks long words if necessary */
 }
 
-/* --- Paragraph Indentation for Writing Area (NEW) --- */
-/* This assumes #writing-area contains <p> tags for paragraphs */
-#writing-area p:not(:first-child) {
-    text-indent: 0.5in; /* Indent all paragraphs except the first one */
+/* --- Flow State Specific Styles for Writing Area --- */
+body.flow-state #writing-area {
+    background-color: var(--writing-area-bg-flow);
+    color: var(--writing-area-text-flow);
+    border-color: var(--primary-color);
 }
 
-#writing-area p:first-child {
-    text-indent: 0; /* Ensure the very first paragraph has no indent */
+/* --- Distraction State Specific Styles for Writing Area --- */
+body.distraction-state #writing-area {
+    background-color: var(--background-color-distraction); /* Use the distraction background for the writing area */
 }
-
 
 .bottom-bar-container {
     width: 95%;
@@ -348,264 +353,267 @@ body.dark-mode #prompt-genre-select {
     transition: opacity 0.5s ease, filter 0.5s ease; /* For flow mode transitions */
 }
 
-/* --- Star System Styles --- */
+/* --- Star System Styles (FOR IMAGES) --- */
 .star-container {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 5px;
-    flex-grow: 1;
-    min-height: 30px;
-    padding-left: 0px;
+    gap: 5px; /* Spacing between stars */
+    flex-grow: 1; /* Allows it to take available space */
 }
 
-.star { /* For individual gold stars (100-400 words) */
-    font-size: 1.8em;
-    color: #FFD700; /* Solid gold color */
+.star-container img {
+    width: 24px; /* Default size for all star images */
+    height: 24px;
+    object-fit: contain; /* Ensures the entire image is visible */
+    vertical-align: middle; /* Aligns with text if any */
 }
 
-.gold-star { /* For large gold stars (every 500 words) */
-    font-size: 2.5em; /* Larger size */
-    color: #FFD700; /* Solid gold color */
-    margin: 0 5px; /* Add some margin around it */
+/* Optional: specific sizing for different star types if needed */
+.small-star-image {
+    width: 20px;
+    height: 20px;
 }
 
-.platinum-star { /* For platinum stars (every 1000 words after 5000) */
-    font-size: 3em; /* Even larger */
-    color: #f8f8f8; /* A bright, almost pure white */
-    margin: 0 8px;
-
-    /* Simulate facets and depth using multiple text-shadow layers (static, no glow) */
-    text-shadow:
-        /* Inner facets/highlights (lighter shades) */
-        1px 1px 2px rgba(255, 255, 255, 0.8),
-        -1px -1px 2px rgba(255, 255, 255, 0.8),
-        1px -1px 2px rgba(255, 255, 255, 0.8),
-        -1px 1px 2px rgba(255, 255, 255, 0.8),
-
-        /* Outer edges/shadows (darker shades for depth) */
-        2px 2px 3px rgba(100, 100, 100, 0.6),
-        -2px -2px 3px rgba(100, 100, 100, 0.6),
-        2px -2px 3px rgba(100, 100, 100, 0.6),
-        -2px 2px 3px rgba(100, 100, 100, 0.6);
+.gold-star-image {
+    width: 28px;
+    height: 28px;
 }
 
-/* Word Goal Progress Bar Styles */
+.platinum-star-image {
+    width: 32px;
+    height: 32px;
+}
+
+
+/* --- Info Icon & Stats Popup --- */
+.info-icon-wrapper {
+    position: relative;
+    display: inline-block; /* To contain the popup correctly */
+}
+
+#info-icon {
+    font-size: 1.5em;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#info-icon:hover {
+    color: #555;
+}
+
+.stats-popup {
+    display: none;
+    position: absolute;
+    bottom: 100%; /* Position above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    min-width: 200px;
+    text-align: left;
+    white-space: nowrap; /* Keep text on single line */
+    color: var(--text-color); /* Ensure text color matches theme */
+}
+
+.stats-popup.active {
+    display: block;
+}
+
+.stats-popup p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.stats-popup strong {
+    color: var(--primary-color);
+}
+
+
+/* --- Goal Progress Bar --- */
 .goal-progress-bar-container {
-    width: 150px; /* Adjust width as needed */
-    height: 10px;
-    background-color: #ddd;
-    border-radius: 5px;
+    width: 150px; /* Fixed width */
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
     overflow: hidden;
-    margin-right: 10px; /* Space between bar and buttons */
+    margin: 0 10px; /* Spacing around it */
 }
 
 .goal-progress-bar {
     height: 100%;
-    width: 0%; /* Will be updated by JS */
-    background-color: var(--primary-color); /* Red progress color */
-    border-radius: 5px;
+    background-color: var(--primary-color); /* Red progress bar */
+    width: 0%; /* Initial width */
+    border-radius: 4px;
     transition: width 0.3s ease-out;
 }
 
-/* --- Info Icon and Stats Popup Styles --- */
-.info-icon-wrapper {
-    position: relative;
-    z-index: 10;
-}
-
-#info-icon {
-    font-size: 1.8em;
-    color: var(--primary-color);
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-#info-icon:hover {
-    color: var(--button-hover-bg);
-}
-
-.stats-popup {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    display: none;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 180px;
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.95em;
-    pointer-events: none;
-    transform: translateY(10px);
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-.stats-popup.show {
-    display: flex;
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-.stats-popup p {
-    margin: 0;
-}
-
-/* --- Action Buttons (Copy, Fullscreen) --- */
+/* --- Action Buttons (Copy & Fullscreen) --- */
 .action-buttons {
     display: flex;
     gap: 10px;
 }
 .action-buttons button {
-    font-size: 0.9em;
+    font-size: 0.9em; /* Slightly smaller for bottom bar */
     padding: 8px 15px;
-    width: auto;
+    width: auto; /* Override 90% width from general button style */
 }
 
-/* --- Congratulations Modal Styles --- */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Dark transparent overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it's on top of everything */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.modal-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-content {
-    background-color: #000; /* Black background for modal */
-    color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    max-width: 400px;
-    width: 90%;
-    box-sizing: border-box;
-    font-family: 'Courier Prime', monospace;
-}
-
-.modal-title {
-    font-family: 'Bebas Neue', cursive;
-    color: var(--primary-color);
-    font-size: 2.5em;
-    margin-bottom: 15px;
-}
-
-.modal-message {
-    font-size: 1.2em;
-    margin-bottom: 25px;
-    line-height: 1.4;
-}
-
-.modal-message #achieved-goal-words {
-    color: #FFD700; /* Gold color for the goal number */
-    font-weight: bold;
-}
-
-.modal-buttons {
-    display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-    gap: 15px;
-    width: 100%;
-}
-.modal-buttons .modal-button {
-    width: 100%; /* Ensure buttons fill the modal width */
-}
-
-/* --- Flow State UI Cues (NEW/MODIFIED) --- */
-body.flow-mode {
-    transition: background-color 0.5s ease-in-out;
-    background-color: var(--background-color-flow); /* Sets the overall dark background */
-}
-
-/* De-emphasize other UI elements during flow state */
-/* Targeting major containers in your existing structure */
-body.flow-mode .sidebar, /* Hide/de-emphasize sidebar */
-body.flow-mode .main-content .bottom-bar-container, /* Hide/de-emphasize bottom bar */
-body.flow-mode .main-content .header { /* Assuming a header if it exists in main-content */
-    transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out, pointer-events 0.5s ease;
-    opacity: 0.15; /* Make other elements highly semi-transparent */
-    filter: grayscale(0.8) blur(0.5px); /* Desaturate and apply a very subtle blur */
-    pointer-events: none; /* Make them unclickable during flow */
-}
-
-/* Emphasize the writing area during flow state */
-body.flow-mode #writing-area {
-    transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out, color 0.5s ease-in-out, transform 0.3s ease;
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.6); /* Stronger white glow */
-    background-color: var(--writing-area-bg-flow); /* Use flow-specific background */
-    color: var(--writing-area-text-flow); /* Use flow-specific text color */
-    opacity: 1; /* Ensure it's fully opaque */
-    z-index: 10; /* Ensure it's on top of any layered elements */
-    pointer-events: auto; /* Ensure it remains clickable */
-    transform: scale(1.005); /* Very subtle zoom effect to draw attention */
-}
-
-/* --- Distraction Cues (MODIFIED) --- */
-body.distraction-mode {
-    transition: background-color 0.5s ease-in-out;
-    background-color: var(--background-color-distraction); /* Distinct color for distraction */
-}
-
-/* Reset other elements to full visibility in distraction mode */
-body.distraction-mode .sidebar,
-body.distraction-mode .main-content .bottom-bar-container,
-body.distraction-mode .main-content .header {
-    opacity: 1;
-    filter: none;
-    pointer-events: auto; /* Make them clickable again */
-}
-
-/* Reset writing area in distraction mode */
-body.distraction-mode #writing-area {
-    box-shadow: none;
-    background-color: var(--writing-area-bg); /* Revert to normal writing area background */
-    color: var(--text-color); /* Revert to normal text color */
-    transform: scale(1); /* Revert zoom */
-}
-
-/* --- Nudge message style (NEW) --- */
+/* --- Flow Nudge Message (NEW) --- */
 #flow-nudge-message {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: var(--primary-color); /* Matches your theme */
-    color: white; /* Changed to white for better contrast on red */
-    padding: 12px 25px;
+    background-color: rgba(240, 20, 30, 0.9); /* Red background */
+    color: white;
+    padding: 10px 20px;
     border-radius: 8px;
-    font-size: 1em;
-    font-family: sans-serif;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    font-size: 1.1em;
+    font-weight: bold;
     z-index: 1000;
-    pointer-events: none; /* Allows clicks to pass through */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    text-align: center;
-    max-width: 80%; /* Limit width */
+    opacity: 0; /* Start hidden */
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-#flow-nudge-message.show {
+#flow-nudge-message.active {
     opacity: 1;
     visibility: visible;
+}
+
+/* --- Modal Styles --- */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0; /* Start hidden for transition */
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex; /* Show when active */
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    color: #333; /* Dark text for modal content */
+}
+
+body.dark-mode .modal-content {
+    background-color: #222;
+    color: var(--text-color);
+}
+
+.modal-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2em;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.modal-message {
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.modal-button {
+    flex: 1; /* Distribute space evenly */
+    max-width: 180px;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column; /* Stack sidebar and main content */
+        overflow-y: auto; /* Allow scrolling for whole page on small screens */
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .main-content {
+        height: auto;
+        flex-grow: 1;
+        padding: 15px;
+    }
+
+    #writing-area {
+        height: 300px; /* Fixed height for writing area on small screens */
+        width: calc(100% - 30px); /* Adjust for padding */
+        margin-bottom: 15px;
+    }
+
+    .bottom-bar-container {
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center;
+        gap: 10px; /* Space between stacked elements */
+        padding-bottom: 15px; /* Add some padding at the bottom */
+    }
+
+    .action-buttons {
+        width: 100%; /* Make buttons take full width */
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-buttons button {
+        width: 100%; /* Full width for action buttons */
+    }
+
+    .star-container {
+        justify-content: center; /* Center stars on small screens */
+        margin-bottom: 10px;
+    }
+
+    .goal-progress-bar-container {
+        width: 80%; /* Make progress bar wider */
+        margin-bottom: 10px;
+    }
+
+    .stats-popup {
+        bottom: auto; /* Let it position normally */
+        top: 0;
+        left: 0;
+        transform: none; /* Remove transform */
+        width: 100%;
+        max-width: none; /* Allow full width */
+        border-radius: 0;
+        box-sizing: border-box; /* Include padding in width */
+    }
+
+    body.fullscreen .sidebar {
+        display: none;
+    }
 }
