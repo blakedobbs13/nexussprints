@@ -270,7 +270,6 @@ body.dark-mode #prompt-genre-select {
 #sprint-log li:last-child {
     border-bottom: none;
 }
-
 #sprint-streak {
     color: #FFD700; /* Gold color for streak number */
     font-size: 1.1em;
@@ -288,7 +287,6 @@ body.dark-mode #prompt-genre-select {
     font-family: sans-serif;
     font-size: 0.9em;
 }
-
 .prompt-text {
     font-style: italic;
     font-size: 0.9em;
@@ -329,17 +327,16 @@ body.dark-mode #prompt-genre-select {
     overflow-wrap: break-word; /* Breaks long words if necessary */
 }
 
-/* --- Flow State Specific Styles for Writing Area --- */
-body.flow-state #writing-area {
-    background-color: var(--writing-area-bg-flow);
-    color: var(--writing-area-text-flow);
-    border-color: var(--primary-color);
+/* --- Paragraph Indentation for Writing Area (NEW) --- */
+/* This assumes #writing-area contains <p> tags for paragraphs */
+#writing-area p:not(:first-child) {
+    text-indent: 0.5in; /* Indent all paragraphs except the first one */
 }
 
-/* --- Distraction State Specific Styles for Writing Area --- */
-body.distraction-state #writing-area {
-    background-color: var(--background-color-distraction); /* Use the distraction background for the writing area */
+#writing-area p:first-child {
+    text-indent: 0; /* Ensure the very first paragraph has no indent */
 }
+
 
 .bottom-bar-container {
     width: 95%;
@@ -358,31 +355,31 @@ body.distraction-state #writing-area {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 5px; /* Spacing between stars */
+    gap: 8px; /* Slightly increased spacing between stars */
     flex-grow: 1; /* Allows it to take available space */
 }
 
 .star-container img {
-    width: 24px; /* Default size for all star images */
-    height: 24px;
+    width: 30px; /* Default size for all star images - Increased from 24px */
+    height: 30px; /* Default size for all star images - Increased from 24px */
     object-fit: contain; /* Ensures the entire image is visible */
     vertical-align: middle; /* Aligns with text if any */
 }
 
 /* Optional: specific sizing for different star types if needed */
 .small-star-image {
-    width: 20px;
-    height: 20px;
+    width: 25px; /* Increased from 20px */
+    height: 25px; /* Increased from 20px */
 }
 
 .gold-star-image {
-    width: 28px;
-    height: 28px;
+    width: 35px; /* Increased from 28px */
+    height: 35px; /* Increased from 28px */
 }
 
 .platinum-star-image {
-    width: 32px;
-    height: 32px;
+    width: 40px; /* Increased from 32px */
+    height: 40px; /* Increased from 32px */
 }
 
 
