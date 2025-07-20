@@ -327,16 +327,17 @@ body.dark-mode #prompt-genre-select {
     overflow-wrap: break-word; /* Breaks long words if necessary */
 }
 
-/* --- Paragraph Indentation for Writing Area (NEW) --- */
-/* This assumes #writing-area contains <p> tags for paragraphs */
-#writing-area p:not(:first-child) {
-    text-indent: 0.5in; /* Indent all paragraphs except the first one */
+/* --- Flow State Specific Styles for Writing Area --- */
+body.flow-state #writing-area {
+    background-color: var(--writing-area-bg-flow);
+    color: var(--writing-area-text-flow);
+    border-color: var(--primary-color);
 }
 
-#writing-area p:first-child {
-    text-indent: 0; /* Ensure the very first paragraph has no indent */
+/* --- Distraction State Specific Styles for Writing Area --- */
+body.distraction-state #writing-area {
+    background-color: var(--background-color-distraction); /* Use the distraction background for the writing area */
 }
-
 
 .bottom-bar-container {
     width: 95%;
@@ -355,31 +356,31 @@ body.dark-mode #prompt-genre-select {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 8px; /* Slightly increased spacing between stars */
+    gap: 5px; /* Spacing between stars */
     flex-grow: 1; /* Allows it to take available space */
 }
 
 .star-container img {
-    width: 30px; /* Default size for all star images - Increased from 24px */
-    height: 30px; /* Default size for all star images - Increased from 24px */
+    width: 24px; /* Default size for all star images */
+    height: 24px;
     object-fit: contain; /* Ensures the entire image is visible */
     vertical-align: middle; /* Aligns with text if any */
 }
 
 /* Optional: specific sizing for different star types if needed */
 .small-star-image {
-    width: 25px; /* Increased from 20px */
-    height: 25px; /* Increased from 20px */
+    width: 20px;
+    height: 20px;
 }
 
 .gold-star-image {
-    width: 35px; /* Increased from 28px */
-    height: 35px; /* Increased from 28px */
+    width: 40px; /* Increased from 28px to 40px */
+    height: 40px; /* Increased from 28px to 40px */
 }
 
 .platinum-star-image {
-    width: 40px; /* Increased from 32px */
-    height: 40px; /* Increased from 32px */
+    width: 32px;
+    height: 32px;
 }
 
 
@@ -444,8 +445,8 @@ body.dark-mode #prompt-genre-select {
 
 .goal-progress-bar {
     height: 100%;
-    background-color: var(--primary-color); /* Red progress bar */
-    width: 0%; /* Initial width */
+    width: 0%; /* Will be updated by JS */
+    background-color: var(--primary-color); /* Red progress color */
     border-radius: 4px;
     transition: width 0.3s ease-out;
 }
